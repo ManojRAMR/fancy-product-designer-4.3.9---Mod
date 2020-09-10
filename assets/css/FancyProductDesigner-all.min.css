@@ -365,6 +365,15 @@
 .fpd-icon-curve-radius:before {
   content: "\e91a";
 }
+/*  MRR - FPD Icons for radial grad */
+.fpd-icon-radial_grad:before {
+  content: "\e91a";
+}
+
+.fpd-icon-liner_grad:before {
+  content: "\e930";
+}
+/*  MRR-END */
 .fpd-icon-instagram:before {
   content: "\e609";
   color: #444;
@@ -6034,7 +6043,7 @@ body .sp-container .sp-sat {
   display: inline-block;
 }
 
-// MRR - FPD Advanced Image Editor feather mask window style
+/*  MRR - FPD Advanced Image Editor feather mask window style */
 .fpd-content-feather-mask > .fpd-feather-mask-tools {
   display: none;
 }
@@ -6046,7 +6055,7 @@ body .sp-container .sp-sat {
 .fpd-image-editor-container.fpd-show-secondary .fpd-feather-mask-tools {
   display: inline-block;
 }
-// MRR-END
+/*  MRR-END */
 
 .fpd-image-editor-container.fpd-show-secondary .fpd-action-buttons {
   display: none !important;
@@ -6076,7 +6085,7 @@ body .sp-container .sp-sat {
   margin: 0 5px 0 0 !important;
 }
 
-// MRR - Feather Mask Selection Styles
+/*  MRR - Feather Mask Selection Styles */
 .fpd-feather-mask-selection > span {
   display: inline-block;
   text-align: center;
@@ -6103,7 +6112,7 @@ body .sp-container .sp-sat {
   padding: 5px 10px;
   margin: 0 5px 0 0 !important;
 }
-// MRR-END
+/*  MRR-END */
 
 .fpd-content-filters > div {
   border: 1px solid rgba(0, 0, 0, 0.1);
