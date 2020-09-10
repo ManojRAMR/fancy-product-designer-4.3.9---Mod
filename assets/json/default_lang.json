@@ -96,8 +96,6 @@
   "image_editor": {
     "mask": "Mask",
     "feather_mask": "Feather Mask",
-    "radial_feather_mask": "Radial Feather Mask",
-    "react_feather_mask": "Rectangle Feather Mask",
     "filters": "Filters",
     "color_manipulation": "Color Manipulation",
     "custom_cropping": "Custom Cropping",
