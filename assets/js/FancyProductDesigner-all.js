@@ -3319,7 +3319,7 @@ var FancyProductDesignerOptions = function () {
       masks: [],
 
       // MRR - An array containing the SVG urls for custom feather mask shapes
-      feather_masks: [],
+      featherMasks: [],
       // MRR-END
     },
     /**
