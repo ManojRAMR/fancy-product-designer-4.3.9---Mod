@@ -11971,6 +11971,129 @@ var FPDImageEditor = function ($container, targetElement, fpdInstance) {
       $container.removeClass("fpd-show-secondary");
     });
 
+    // MRR- Add feather masks tab actions
+    //--- FEATHER MASK
+    if (options.featherMasks && $.isArray(options.featherMasks)) {
+      options.featherMasks.forEach(function (svgURL) {
+        var title = svgURL.split(/[\\/]/).pop(); //get basename
+        title = title.substr(0, title.lastIndexOf(".")); //remove extension
+
+        $container
+          .find(".fpd-feather-mask-selection")
+          .append(
+            '<span data-mask="' +
+              svgURL +
+              '" class="fpd-tooltip" title="' +
+              title +
+              '" style="background-image: url(' +
+              svgURL +
+              ')"></span>'
+          );
+      });
+    }
+
+    //feather mask gets selected
+    $container.on("click", ".fpd-feather-mask-selection > span", function () {
+      if (!fabricImage) {
+        return false;
+      }
+
+      var $this = $(this),
+        mask = $this.data("mask");
+
+      fabricCanvas.discardActiveObject();
+      fabricImage.evented = false;
+
+      fabricCanvas.clipTo = null;
+      clippingObject = null;
+
+      fabric.loadSVGFromURL(mask, function (objects, options) {
+        //if objects is null, svg is loaded from external server with cors disabled
+        var svgGroup = objects
+          ? fabric.util.groupSVGElements(objects, options)
+          : null;
+
+        fabricCanvas.add(svgGroup);
+        svgGroup.globalCompositeOperation = "destination-in";
+        svgGroup.setOptions(
+          $.extend({}, fabricMaskOptions, {
+            opacity: 1,
+          })
+        );
+        if (fabricCanvas.width > fabricCanvas.height) {
+          svgGroup.scaleToHeight(
+            (fabricCanvas.height - 80) / instance.responsiveScale
+          );
+        } else {
+          svgGroup.scaleToWidth(
+            (fabricCanvas.width - 80) / instance.responsiveScale
+          );
+        }
+
+        if (fabric.version === "1.6.7") {
+          //Fabric 1.6.7
+          svgGroup
+            .getObjects()[0]
+            .set("stroke", borderColor)
+            .set("strokeWidth", 3 / svgGroup.scaleX);
+        } else {
+          svgGroup
+            .set("stroke", borderColor)
+            .set("strokeWidth", 3 / svgGroup.scaleX);
+        }
+
+        clippingObject = svgGroup;
+        _resizeCanvas();
+
+        svgGroup.left = 0;
+        svgGroup.top = 0;
+        svgGroup.setPositionByOrigin(
+          new fabric.Point(canvasWidth * 0.5, canvasHeight * 0.5),
+          "center",
+          "center"
+        );
+
+        svgGroup.setCoords();
+        fabricCanvas.renderAll();
+      });
+
+      fabricCanvas.renderAll();
+      $container.addClass("fpd-show-secondary");
+    });
+
+    //mask: cancel, save
+    $container.on(
+      "click",
+      ".fpd-feather-mask-cancel, .fpd-feather-mask-save",
+      function () {
+        if (!fabricImage) {
+          return false;
+        }
+
+        fabricImage.evented = true;
+
+        fabricCanvas.discardActiveObject();
+
+        if (clippingObject) {
+          if ($(this).hasClass("fpd-mask-save")) {
+            _resizeCanvas();
+
+            clippingObject.set("strokeWidth", 0);
+            clippingObject.set("fill", "transparent");
+            fabricCanvas.clipTo = function (ctx) {
+              clippingObject.render(ctx);
+            };
+          }
+
+          fabricCanvas.remove(clippingObject);
+        }
+
+        $container.removeClass("fpd-show-secondary");
+      }
+    );
+
+    // MRR-END
+
     //--- FILTERS
 
     var availableFilters = [
