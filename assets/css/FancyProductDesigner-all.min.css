@@ -365,15 +365,6 @@
 .fpd-icon-curve-radius:before {
   content: "\e91a";
 }
-// MRR - FPD Icons for radial grad
-.fpd-icon-radial_grad:before {
-  content: "\e91a";
-}
-
-.fpd-icon-liner_grad:before {
-  content: "\e930";
-}
-// MRR-END
 .fpd-icon-instagram:before {
   content: "\e609";
   color: #444;
