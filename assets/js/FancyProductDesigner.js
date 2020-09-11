@@ -11973,6 +11973,9 @@ var FPDImageEditor = function ($container, targetElement, fpdInstance) {
 
     // MRR- Add feather masks tab actions
     //--- Feather
+    /* Read the fpd_masks folder to find custom masks and then they are added to the mask tab*/
+    var newSVG = null;
+    var masked = false;
     if (options.featherMasks && $.isArray(options.featherMasks)) {
       options.featherMasks.forEach(function (svgURL) {
         var title = svgURL.split(/[\\/]/).pop(); //get basename
@@ -11992,66 +11995,154 @@ var FPDImageEditor = function ($container, targetElement, fpdInstance) {
       });
     }
 
-    //Feather Mask gets selected
-    /* Clicked on a Feather Mask button */
+    //Edge feather gets selected
+    /* Clicked on a Edge feather button */
     $container.on(
       "click",
       ".fpd-feather-mask-selection > span",
-
+      /* check wheter there is an image on the canvas */
       function () {
-        /* check wheter there is an image on the canvas */
-        if (!fabricImage) {
-          return false;
-        }
-        if (clippingObject) {
-          fabricCanvas.remove(clippingObject);
-        }
-
-        var $this = $(this),
-          mask = $this.data("mask");
-        /* Deselectct selected object */
-        fabricCanvas.discardActiveObject();
-        fabricImage.evented = false;
-
-        fabricCanvas.clipTo = null;
-        clippingObject = null;
-
-        /*   If not custom cropping selected go for this */
-        fabric.loadSVGFromURL(mask, function (objects, options) {
-          //if objects is null, svg is loaded from external server with cors disabled
-          var svgGroup = objects
-            ? fabric.util.groupSVGElements(objects, options)
-            : null;
-
-          fabricCanvas.add(svgGroup);
-          svgGroup.globalCompositeOperation = "destination-in";
-          svgGroup.setOptions($.extend({}, fabricMaskOptions, { opacity: 1 }));
-          if (fabricCanvas.width > fabricCanvas.height) {
-            svgGroup.scaleToHeight(
-              (fabricCanvas.height - 80) / instance.responsiveScale
-            );
-          } else {
-            svgGroup.scaleToWidth(
-              (fabricCanvas.width - 80) / instance.responsiveScale
-            );
+        if (masked == true) {
+          if (!fabricImage) {
+            return false;
           }
 
-          clippingObject = svgGroup;
-          _resizeCanvas();
+          fabricImage.source = targetElement.originSource;
+          fabricImage.setSrc(targetElement.originSource, function () {
+            fabricImage.setCoords();
 
-          svgGroup.left = 0;
-          svgGroup.top = 0;
-          svgGroup.setPositionByOrigin(
-            new fabric.Point(canvasWidth * 0.5, canvasHeight * 0.5),
-            "center",
-            "center"
-          );
-          svgGroup.setCoords();
+            fabricCanvas.renderAll();
+          });
+          /* MRR Adding restore feature for feather */
+          fabricCanvas.remove(clippingObject);
+          fabricCanvas.remove(newSVG);
+          /* MRR-END */
+          instance.reset();
+          masked = false;
+          if (!fabricImage) {
+            return false;
+          }
+          if (newSVG) {
+            /* if (clippingObject) { */
+            fabricCanvas.remove(newSVG);
+            /* fabricCanvas.remove(clippingObject); */
+          }
+
+          var $this = $(this),
+            mask = $this.data("mask");
+          /* Deselectct selected object */
+          fabricCanvas.discardActiveObject();
+          fabricImage.evented = false;
+
+          clippingObject = null;
+
+          /*   If not custom cropping selected go for this */
+          fabric.loadSVGFromURL(mask, function (objects, options) {
+            //if objects is null, svg is loaded from external server with cors disabled
+            var svgGroup = objects
+              ? fabric.util.groupSVGElements(objects, options)
+              : null;
+
+            fabricCanvas.add(svgGroup);
+
+            svgGroup.globalCompositeOperation = "destination-in";
+
+            svgGroup.setOptions(
+              $.extend({}, fabricMaskOptions, { opacity: 1 })
+            );
+
+            if (fabricCanvas.width > fabricCanvas.height) {
+              svgGroup.scaleToHeight(
+                (fabricCanvas.height - 80) / instance.responsiveScale
+              );
+            } else {
+              svgGroup.scaleToWidth(
+                (fabricCanvas.width - 80) / instance.responsiveScale
+              );
+            }
+
+            /* fabricCanvas.add(svgGroup); */
+            clippingObject = svgGroup;
+            /* clippingObject = svgGroup; */
+            _resizeCanvas();
+
+            svgGroup.left = 0;
+            svgGroup.top = 0;
+            svgGroup.setPositionByOrigin(
+              new fabric.Point(canvasWidth * 0.5, canvasHeight * 0.5),
+              "center",
+              "center"
+            );
+            svgGroup.setCoords();
+            fabricCanvas.renderAll();
+          });
+
           fabricCanvas.renderAll();
-        });
 
-        fabricCanvas.renderAll();
-        $container.addClass("fpd-show-secondary");
+          $container.addClass("fpd-show-secondary");
+        } else {
+          if (!fabricImage) {
+            return false;
+          }
+          if (newSVG) {
+            /* if (clippingObject) { */
+            fabricCanvas.remove(newSVG);
+            /* fabricCanvas.remove(clippingObject); */
+          }
+
+          var $this = $(this),
+            mask = $this.data("mask");
+          /* Deselectct selected object */
+          fabricCanvas.discardActiveObject();
+          fabricImage.evented = false;
+
+          clippingObject = null;
+
+          /*   If not custom cropping selected go for this */
+          fabric.loadSVGFromURL(mask, function (objects, options) {
+            //if objects is null, svg is loaded from external server with cors disabled
+            var svgGroup = objects
+              ? fabric.util.groupSVGElements(objects, options)
+              : null;
+
+            fabricCanvas.add(svgGroup);
+
+            svgGroup.globalCompositeOperation = "destination-in";
+
+            svgGroup.setOptions(
+              $.extend({}, fabricMaskOptions, { opacity: 1 })
+            );
+
+            if (fabricCanvas.width > fabricCanvas.height) {
+              svgGroup.scaleToHeight(
+                (fabricCanvas.height - 80) / instance.responsiveScale
+              );
+            } else {
+              svgGroup.scaleToWidth(
+                (fabricCanvas.width - 80) / instance.responsiveScale
+              );
+            }
+
+            /* fabricCanvas.add(svgGroup); */
+            clippingObject = svgGroup;
+            /* clippingObject = svgGroup; */
+            _resizeCanvas();
+
+            svgGroup.left = 0;
+            svgGroup.top = 0;
+            svgGroup.setPositionByOrigin(
+              new fabric.Point(canvasWidth * 0.5, canvasHeight * 0.5),
+              "center",
+              "center"
+            );
+            svgGroup.setCoords();
+            fabricCanvas.renderAll();
+          });
+
+          fabricCanvas.renderAll();
+
+          $container.addClass("fpd-show-secondary");
+        }
       }
     );
 
@@ -12067,16 +12158,18 @@ var FPDImageEditor = function ($container, targetElement, fpdInstance) {
         fabricImage.evented = true;
 
         fabricCanvas.discardActiveObject();
-
-        if (clippingObject) {
+        newSVG = clippingObject;
+        clippingObject = null;
+        if (newSVG) {
           if ($(this).hasClass("fpd-feather-mask-save")) {
+            fabricCanvas.add(newSVG);
+            newSVG.selectable = false;
+            /* clippingObject=null; */
+            /* 	
+			fabricCanvas.renderAll(); */
             _resizeCanvas();
-            clippingObject.set("strokeWidth", 0);
-            clippingObject.set("fill", "transparent");
-            /* fabricCanvas.add(clippingObject); */
           }
-
-          fabricCanvas.remove(clippingObject);
+          fabricCanvas.remove(newSVG);
         }
 
         $container.removeClass("fpd-show-secondary");
@@ -12125,7 +12218,7 @@ var FPDImageEditor = function ($container, targetElement, fpdInstance) {
             '" class="fpd-tooltip"></div>'
         );
     });
-    console.log("js");
+
     $container
       .find(".fpd-content-filters [data-defaulttext]")
       .each(function (index, filterElement) {
