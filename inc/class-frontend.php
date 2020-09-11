@@ -133,7 +133,16 @@ if (!class_exists('FPD_Frontend_Product')) {
 
 			if ($product_settings->show_designer()) {
 
-				do_action('fpd_before_product_designer');
+				// MRR - Load fpd products from raq, cart or not both
+				if (isset($_GET['raq_item_key'])) {
+					do_action('fpd_before_product_designer_raq');
+				} else {
+					do_action('fpd_before_product_designer');
+				}
+
+				//do_action('fpd_before_product_designer');
+				// MRR-END
+
 
 				//load product from share
 				if (isset($_GET['share_id'])) {
