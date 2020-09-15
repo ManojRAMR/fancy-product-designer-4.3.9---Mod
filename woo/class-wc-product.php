@@ -457,6 +457,14 @@ if (!class_exists('FPD_WC_Product')) {
 
 
 					})
+
+					// MRR - On Quote request btn click add spinner on FPD
+					$cartForm.on('fpdProductSubmitToRaq', function() {
+
+						fancyProductDesigner.toggleSpinner(true);
+					})
+					// MRR-END
+
 					// MRR - Add to quote button click event handler
 					$addToQuoteBtn = $('.add-request-quote-button')
 					$addToQuoteBtn.on('click', function(evt) {
@@ -474,6 +482,9 @@ if (!class_exists('FPD_WC_Product')) {
 
 							var priceSet = _setTotalPrice();
 
+							jQuery('.add-request-quote-button').addClass('fpd-disabled');
+							jQuery('.single_add_to_cart_button').addClass('fpd-disabled');
+
 							var tempDevicePixelRation = fabric.devicePixelRatio,
 								viewOpts = fancyProductDesigner.viewInstances[0].options,
 								multiplier = FPDUtil.getScalingByDimesions(viewOpts.stageWidth, viewOpts.stageHeight, <?php echo fpd_get_option('fpd_wc_cart_thumbnail_width'); ?>, <?php echo fpd_get_option('fpd_wc_cart_thumbnail_height'); ?>);
@@ -483,6 +494,10 @@ if (!class_exists('FPD_WC_Product')) {
 
 								$cartForm.find('input[name="fpd_product"]').val(JSON.stringify(order));
 								$cartForm.find('input[name="fpd_product_thumbnail"]').val(decodeURIComponent(dataURL));
+
+								if (priceSet) {
+									$cartForm.trigger('fpdProductSubmitToRaq');
+								}
 
 								fabric.devicePixelRatio = tempDevicePixelRation;
 
@@ -533,7 +548,9 @@ if (!class_exists('FPD_WC_Product')) {
 
 							var priceSet = _setTotalPrice();
 							jQuery('.single_add_to_cart_button').addClass('fpd-disabled');
-
+							// MRR - Disable add to quote button on add to cart btn click
+							jQuery('.add-request-quote-button').addClass('fpd-disabled');
+							// MRR-END
 							var tempDevicePixelRation = fabric.devicePixelRatio,
 								viewOpts = fancyProductDesigner.viewInstances[0].options,
 								multiplier = FPDUtil.getScalingByDimesions(viewOpts.stageWidth, viewOpts.stageHeight, <?php echo fpd_get_option('fpd_wc_cart_thumbnail_width'); ?>, <?php echo fpd_get_option('fpd_wc_cart_thumbnail_height'); ?>);
